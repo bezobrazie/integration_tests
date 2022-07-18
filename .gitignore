@@ -1,0 +1,13 @@
+__pycache__/
+.idea/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+temp/
+allure_results/
+
+behave.ini
