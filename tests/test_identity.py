@@ -1,51 +1,53 @@
 from config import BASE_URL_OFL, DB_CONCTIONS_PARAMS
 from appDriver.http_client import HttpClientOWF
-from appDriver.db_client import DBClient
+from appDriver.db_client import DBClient, CreateConection
 from testData.identity_data import IdentityData
-import psycopg2
-
-#TODO>  ДЗ - тесты на регистрацию (успешный/негативный(повторно)), авторизацию.
 
 
 class TestRegistration:
 
     def setup(self):
         self.http_client = HttpClientOWF(BASE_URL_OFL)
-        self.connection = psycopg2.connect(
-            dbname=DB_CONCTIONS_PARAMS.get('dbname'),
-            user=DB_CONCTIONS_PARAMS.get('user'),
-            password=DB_CONCTIONS_PARAMS.get('password'),
-            host=DB_CONCTIONS_PARAMS.get('host'))
+        self.connection = CreateConection.create_OWF_DB_conection()
         self.db_client = DBClient(self.connection)
         self.users_for_assert = []
+
+    def test_find_user_before_registration(self):
+        users = self.db_client.get_users()
+        for user in users:
+            self.users_for_assert.append(user.get('email'))
+
+        assert IdentityData.TEST_DATA['email'] not in self.users_for_assert, f"Пользователь с почтой - {IdentityData.TEST_DATA['email']}, уже есть в БД"
 
     def test_register(self):
         response = self.http_client.register(IdentityData.TEST_DATA)
         assert response.status_code == 200
 
-    # def test_get_users(self):
-    #     print(self.db_client.get_users())
-    def test_get_users(self):
+    def test_re_register(self):
+        response = self.http_client.register(IdentityData.TEST_DATA)
+        assert response.status_code == 400
+        assert response.json().get('errorMessage') == "Пользователь с Email: post@mail.ru уже зарегистрирован"
+
+    def test_find_user_after_registration(self):
         users = self.db_client.get_users()
         for user in users:
             self.users_for_assert.append(user.get('email'))
-
-        print(self.users_for_assert)
 
         assert IdentityData.TEST_DATA['email'] in self.users_for_assert
 
     def teardown(self):
         self.connection.close()
+        #TODO чистить БД от пользователя
 
 
 class TestSuccessAutorization:
-    login_data = {
-        'email': IdentityData.TEST_DATA['email'],
-        'password': IdentityData.TEST_DATA['password']
-    }
 
     def setup(self):
         self.http_client = HttpClientOWF(BASE_URL_OFL)
+        self.login_data = {
+            'email': IdentityData.TEST_DATA['email'],
+            'password': IdentityData.TEST_DATA['password']
+        }
 
     def test_login(self):
         response = self.http_client.login(self.login_data)
