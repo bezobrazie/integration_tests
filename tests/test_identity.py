@@ -1,6 +1,6 @@
 from config import BASE_URL_OFL, DB_CONCTIONS_PARAMS
 from appDriver.http_client import HttpClientOWF
-from appDriver.db_client import DBClient, CreateConection
+from appDriver.db_client import DBClient
 from testData.identity_data import IdentityData
 
 
@@ -8,7 +8,7 @@ class TestRegistration:
 
     def setup(self):
         self.http_client = HttpClientOWF(BASE_URL_OFL)
-        self.connection = CreateConection.create_OWF_DB_conection()
+        self.connection = DBClient.create_conection()
         self.db_client = DBClient(self.connection)
         self.users_for_assert = []
 

@@ -2,20 +2,17 @@ import psycopg2
 from config import DB_CONCTIONS_PARAMS
 
 
-class CreateConection:
+class DBClient:
+    def __init__(self, conection):
+        self.conection = conection
 
     @staticmethod
-    def create_OWF_DB_conection():
+    def create_conection():
         return psycopg2.connect(
             dbname=DB_CONCTIONS_PARAMS.get('dbname'),
             user=DB_CONCTIONS_PARAMS.get('user'),
             password=DB_CONCTIONS_PARAMS.get('password'),
             host=DB_CONCTIONS_PARAMS.get('host'))
-
-
-class DBClient:
-    def __init__(self, conection):
-        self.conection = conection
 
     def get_users(self) -> list:
         """ Получение всех пользователей """
