@@ -1,5 +1,6 @@
 import psycopg2
 from config import DB_CONCTIONS_PARAMS
+from psycopg2 import Error
 
 
 class DBClient:
@@ -34,3 +35,16 @@ class DBClient:
                 )
 
             return users
+
+    def delete_user(self, user: str):
+        try:
+            with self.conection.cursor() as cursor:
+                cursor.execute(f"delete from users where email = '{user}'")
+                cursor.execute(f"delete from \"AspNetUsers\" where user_name = '{user}'")
+                self.conection.commit()
+                count = cursor.rowcount
+                print(count, "Запись успешно удалена")
+        except (Exception, Error) as error:
+            print("Ошибка при работе с PostgreSQL", error)
+
+    #TODO добавить метод для проверки существования пользователя

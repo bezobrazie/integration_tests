@@ -4,13 +4,13 @@ from appDriver.db_client import DBClient
 from testData.identity_data import IdentityData
 
 
+#TODO написать создание конекшена через фикстуры
 class TestRegistration:
 
-    def setup(self):
-        self.http_client = HttpClientOWF(BASE_URL_OFL)
-        self.connection = DBClient.create_conection()
-        self.db_client = DBClient(self.connection)
-        self.users_for_assert = []
+    http_client = HttpClientOWF(BASE_URL_OFL)
+    connection = DBClient.create_conection()
+    db_client = DBClient(connection)
+    users_for_assert = []
 
     def test_find_user_before_registration(self):
         users = self.db_client.get_users()
@@ -35,9 +35,13 @@ class TestRegistration:
 
         assert IdentityData.TEST_DATA['email'] in self.users_for_assert
 
-    def teardown(self):
-        self.connection.close()
-        #TODO чистить БД от пользователя
+    @classmethod
+    def teardown_class(cls):
+        """ teardown any state that was previously setup with a call to
+        setup_class.
+        """
+        cls.db_client.delete_user(IdentityData.TEST_DATA['email'])
+        cls.connection.close()
 
 
 class TestSuccessAutorization:
