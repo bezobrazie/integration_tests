@@ -1,7 +1,6 @@
-
 class IdentityData:
 
-  TEST_DATA = {
+  VALID_REGISTRATION_DATA = {
     "email": "post@mail.ru",
     "password": "Test123456",
     "confirmPassword": "Test123456",
@@ -11,12 +10,17 @@ class IdentityData:
     "phoneNumber": "+79657020827"
   }
 
-  FAILED_LOGIN_DATA = {
+  BAD_LOGIN = {
     "email": "post@mail1.ru",
     "password": "Test123456"
   }
 
-  FAILED_PASSWORD_DATA = {
+  BAD_PASSWORD = {
     "email": "post@mail.ru",
     "password": "Test12345"
+  }
+
+  VALID_AUTORIZATION = {
+    "email": "post@mail.ru",
+    "password": "Test123456"
   }

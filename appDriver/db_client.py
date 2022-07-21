@@ -1,10 +1,20 @@
 from psycopg2 import Error
+import psycopg2
+from config import DB_CONCTIONS_PARAMS
 
 
 class DBClient:
 
     def __init__(self, connection):
         self.connection = connection
+
+    @staticmethod
+    def connection():
+        return psycopg2.connect(
+            dbname=DB_CONCTIONS_PARAMS.get('dbname'),
+            user=DB_CONCTIONS_PARAMS.get('user'),
+            password=DB_CONCTIONS_PARAMS.get('password'),
+            host=DB_CONCTIONS_PARAMS.get('host'))
 
     def get_users(self) -> list:
         """ Получение всех пользователей """
@@ -37,5 +47,3 @@ class DBClient:
                 print(count, "Запись успешно удалена")
         except (Exception, Error) as error:
             print("Ошибка при работе с PostgreSQL", error)
-
-    #TODO добавить метод для проверки существования пользователя
