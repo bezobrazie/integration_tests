@@ -1,23 +1,14 @@
-import psycopg2
-from config import DB_CONCTIONS_PARAMS
 from psycopg2 import Error
 
 
 class DBClient:
-    def __init__(self, conection):
-        self.conection = conection
 
-    @staticmethod
-    def create_conection():
-        return psycopg2.connect(
-            dbname=DB_CONCTIONS_PARAMS.get('dbname'),
-            user=DB_CONCTIONS_PARAMS.get('user'),
-            password=DB_CONCTIONS_PARAMS.get('password'),
-            host=DB_CONCTIONS_PARAMS.get('host'))
+    def __init__(self, connection):
+        self.connection = connection
 
     def get_users(self) -> list:
         """ Получение всех пользователей """
-        with self.conection.cursor() as cursor:
+        with self.connection.cursor() as cursor:
             cursor.execute("SELECT * from users")
             records = cursor.fetchall()
 
@@ -38,10 +29,10 @@ class DBClient:
 
     def delete_user(self, user: str):
         try:
-            with self.conection.cursor() as cursor:
+            with self.connection.cursor() as cursor:
                 cursor.execute(f"delete from users where email = '{user}'")
                 cursor.execute(f"delete from \"AspNetUsers\" where user_name = '{user}'")
-                self.conection.commit()
+                self.connection.commit()
                 count = cursor.rowcount
                 print(count, "Запись успешно удалена")
         except (Exception, Error) as error:
