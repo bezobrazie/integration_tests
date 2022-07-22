@@ -4,12 +4,19 @@ from config import DB_CONCTIONS_PARAMS
 
 
 class DBClient:
+    """
+    Клиент для рабоыт с БД.
+    connection описан в staticmethod connection
+    """
 
     def __init__(self, connection):
         self.connection = connection
 
     @staticmethod
     def connection():
+        """
+        Метод для создания конекта к БД используетс япри создании класса DBClient -_-
+        """
         return psycopg2.connect(
             dbname=DB_CONCTIONS_PARAMS.get('dbname'),
             user=DB_CONCTIONS_PARAMS.get('user'),
@@ -17,7 +24,10 @@ class DBClient:
             host=DB_CONCTIONS_PARAMS.get('host'))
 
     def get_users(self) -> list:
-        """ Получение всех пользователей """
+        """
+        Получение всех пользователей
+        :return: возвращает список всех пользователей в базе
+        """
         with self.connection.cursor() as cursor:
             cursor.execute("SELECT * from users")
             records = cursor.fetchall()
@@ -37,11 +47,15 @@ class DBClient:
 
             return users
 
-    def delete_user(self, user: str):
+    def delete_user(self, email: str):
+        """
+        Удаление пользователя по email
+        :param email: почта пользователя которого хотите удалить из базы
+        """
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(f"delete from users where email = '{user}'")
-                cursor.execute(f"delete from \"AspNetUsers\" where user_name = '{user}'")
+                cursor.execute(f"delete from users where email = '{email}'")
+                cursor.execute(f"delete from \"AspNetUsers\" where user_name = '{email}'")
                 self.connection.commit()
                 count = cursor.rowcount
                 print(count, "Запись успешно удалена")
