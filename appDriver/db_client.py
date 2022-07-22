@@ -12,6 +12,7 @@ class DBClient:
     def __init__(self, connection):
         self.connection = connection
 
+    #TODO создать отдельный класс ДБ конекшн или вытащить его в фикстуры, метод нужно переименовать в глагол
     @staticmethod
     def connection():
         """

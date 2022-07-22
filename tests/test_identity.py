@@ -20,10 +20,12 @@ class TestSuccessRegistration:
     Тест-кейс на регистрацию. Проверяет: регистрацию и повторную регистрацию.
     """
 
+    # TODO удалить проверку test_find_user_before_registration
     def test_find_user_before_registration(self, db_client):
         """
         Проверка наличия пользователя в БД. Перед регистрацией пользователя быть не должно.
         """
+        #TODO Сделать внутри теста вызов get_users а затем передавать данные в метод логики
         assert not DBQueryHandler(db_client).user_exist_check(IdentityData.VALID_REGISTRATION_DATA['email']),\
             f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA['email']}, уже есть в БД"
 

@@ -38,6 +38,7 @@ def user():
     connection.close()
 
 
+#TODO можно запихнуть фикстуру в фикстуру, попробовать засунуть db-client сюда
 @pytest.fixture(scope="class")
 def delete_user():
     """
