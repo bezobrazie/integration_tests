@@ -5,6 +5,8 @@ import pytest
 #TODO написать метод для проверки пользователя в БД
 #TODO Тест на протухший токен
 #TODO Посмотреть, какие ошибки выдает API http://localhost:8000/api-docs/index.html
+#TODO Ввести параметризацию
+#TODO Добавить коментарии и тайпхинты
 
 
 @pytest.mark.usefixtures('db_client', 'http_client', 'user')
