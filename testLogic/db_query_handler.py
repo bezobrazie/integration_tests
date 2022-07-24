@@ -6,6 +6,7 @@ class DBQueryHandler:
 
     def user_exist_check(self, users: list, email: str) -> bool:
         """
+        Проверка наличия пользователя в БД.
         :param email: строчное значение почты по которой мы ищем пользователя в базе
         :param users: список словарей с пользователями
         :return: возвращает будевое значение True - пользователь есть в БД, False - пользователь отсутствует в БД

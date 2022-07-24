@@ -1,8 +1,8 @@
 import pytest
 from testData.identity_data import IdentityData
 from testLogic.db_query_handler import DBQueryHandler
-from appDriver.db_client import DBClient
-from appDriver.http_client import HttpClientOWF
+from appDriver import DBClient
+from appDriver import HttpClientOWF
 
 #TODO Регистрация Пустые поля (параметризованный)
 #TODO Авторизация пустые поля
@@ -61,7 +61,7 @@ class TestBadDataRegistration:
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
         error_message = response.json().get('errorMessage')
-        assert error_message == test_data["expected"], f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {expected}"
+        assert error_message == test_data["expected"], f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {test_data['expected']}"
 
     def test_find_user_after_registration(self, db_client: DBClient, test_data: dict):
         """
@@ -96,51 +96,32 @@ class TestSuccessAutorization:
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
 
+@pytest.mark.parametrize(argnames="test_data",
+                         argvalues=IdentityData.DATA_FOR_BAD_AUTH,
+                         scope="class",
+                         ids=[cases['case_name'] for cases in IdentityData.DATA_FOR_BAD_AUTH])
 @pytest.mark.usefixtures('http_client', 'delete_user')
-class TestFailedAutorizationBadLogin:
+class TestFailedAutorization:
     """
-    Авторизация с некоректным логином
+    Авторизация с некорректными данными
     """
 
-    def test_register(self, http_client: HttpClientOWF):
+    def test_register(self, http_client: HttpClientOWF, test_data):
         """
         Регистрация пользователя
         """
         response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
+        print(response.json())
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_login(self, http_client: HttpClientOWF):
+    def test_login(self, http_client: HttpClientOWF, test_data: dict):
         """
         Авторизация с невалидным логином
         """
-        response = http_client.login(IdentityData.BAD_LOGIN)
+        input = test_data["input"]
+        response = http_client.login(input)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == f"Пользователь с email {IdentityData.BAD_LOGIN['email']} не найден",\
-            f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {IdentityData.BAD_LOGIN['email']} не найден\""
-
-
-@pytest.mark.usefixtures('http_client', 'delete_user')
-class TestFailedAutorizationBadPassword:
-    """
-    Авторизация с некоректным паролем
-    """
-
-    def test_register(self, http_client: HttpClientOWF):
-        """
-        Регистрация пользователя
-        """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
-
-        assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
-
-    def test_login(self, http_client: HttpClientOWF):
-        """
-        Авторизация с невалидным паролем
-        """
-        response = http_client.login(IdentityData.BAD_PASSWORD)
-
-        assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == "Неверный пароль",\
-            f"Ошибка {response.json().get('errorMessage')} не равна ожидаемой \"Неверный пароль\""
+        assert response.json().get('errorMessage') == test_data["expected"],\
+            f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {input['email']} не найден\""

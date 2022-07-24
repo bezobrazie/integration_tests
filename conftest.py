@@ -1,11 +1,10 @@
 import pytest
 import psycopg2
-from appDriver.http_client import HttpClientOWF
-from appDriver.db_client import DBClient
+from appDriver import HttpClientOWF
+from appDriver import DBClient
 from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
 from testData.identity_data import IdentityData
-
 
 
 def connect() -> psycopg2.connect:
@@ -37,7 +36,7 @@ def http_client():
     return HttpClientOWF(BASE_URL_OFL)
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="class", autouse=True)
 def delete_user(db_client):
     """
     Фикстура для удаления пользователя после тестирвоания.\
