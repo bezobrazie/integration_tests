@@ -64,7 +64,13 @@ class IdentityData:
     }
 
     DATA_FOR_BAD_REG = [
-        (BAD_CONFIRM_PASSWORD_REGISTRATION_DATA, "Пароли не совпадают"),
-        (BAD_EMAIL_REGISTRATION_DATA, "Электронный адрес должен соответствовать регулярному выражению ^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,}$"),
-        (BAD_PHONE_REGISTRATION_DATE, "Номер телефона должен соответствовать регулярному выражению ^\\+7\\d{10}$"),
+        {"input": BAD_CONFIRM_PASSWORD_REGISTRATION_DATA,
+         "expected": "Пароли не совпадают",
+         "case_name": "Registering with mismatched passwords"},
+        {"input": BAD_EMAIL_REGISTRATION_DATA,
+         "expected": "Электронный адрес должен соответствовать регулярному выражению ^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,}$",
+         "case_name": "Email does not pass regular expression"},
+        {"input": BAD_PHONE_REGISTRATION_DATE,
+         "expected": "Номер телефона должен соответствовать регулярному выражению ^\\+7\\d{10}$",
+         "case_name": "Phone number doesn't pass regular expression"}
     ]

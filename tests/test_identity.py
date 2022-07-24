@@ -1,17 +1,13 @@
+import pytest
 from testData.identity_data import IdentityData
 from testLogic.db_query_handler import DBQueryHandler
+from appDriver.db_client import DBClient
+from appDriver.http_client import HttpClientOWF
 
-import pytest
-
-#TODO сделать нейминги для параметризованных тестов
 #TODO Регистрация Пустые поля (параметризованный)
-
 #TODO Авторизация пустые поля
 #TODO Авторизация невалидные поля (параметризованый)
-
-#TODO сделать наименования тестов.
 #TODO Тест на протухший токен
-#TODO Подумать, стоит ли выносить регистрацию пользователя в фикстуру, т.к. она используется почти в каждом тесте на identity
 
 
 @pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
@@ -20,16 +16,7 @@ class TestSuccessRegistration:
     Тест-кейс на регистрацию. Проверяет: регистрацию и повторную регистрацию.
     """
 
-    # TODO удалить проверку test_find_user_before_registration
-    def test_find_user_before_registration(self, db_client):
-        """
-        Проверка наличия пользователя в БД. Перед регистрацией пользователя быть не должно.
-        """
-        #TODO Сделать внутри теста вызов get_users а затем передавать данные в метод логики
-        assert not DBQueryHandler(db_client).user_exist_check(IdentityData.VALID_REGISTRATION_DATA['email']),\
-            f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA['email']}, уже есть в БД"
-
-    def test_register(self, http_client):
+    def test_register(self, http_client: HttpClientOWF):
         """
         Регистрация пользователя
         """
@@ -37,7 +24,7 @@ class TestSuccessRegistration:
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_re_register(self, http_client):
+    def test_re_register(self, http_client: HttpClientOWF):
         """
         Повторная регистрация пользователя
         """
@@ -47,49 +34,52 @@ class TestSuccessRegistration:
         assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA['email']} уже зарегистрирован",\
             f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA['email']} успешно повторно зарегистрировался"
 
-    def test_find_user_after_registration(self, db_client):
+    def test_find_user_after_registration(self, db_client: DBClient):
         """
         Проверка наличия пользователя в БД. После регистрации, пользователь должен быть в БД.
         """
-        assert DBQueryHandler(db_client).user_exist_check(IdentityData.VALID_REGISTRATION_DATA['email']),\
+        users = db_client.get_users()
+        assert DBQueryHandler().user_exist_check(users, IdentityData.VALID_REGISTRATION_DATA['email']),\
             f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA['email']}, отсутствует в БД"
 
 
-@pytest.mark.parametrize("test_input,expected", IdentityData.DATA_FOR_BAD_REG)
+@pytest.mark.parametrize(argnames="test_data",
+                         argvalues=IdentityData.DATA_FOR_BAD_REG,
+                         scope="class",
+                         ids=[cases['case_name'] for cases in IdentityData.DATA_FOR_BAD_REG])
 @pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
 class TestBadDataRegistration:
-    def test_find_user_before_registration(self, db_client, test_input, expected):
-        """
-        Проверка наличия пользователя в БД. Перед регистрацией пользователя быть не должно.
-        """
-        assert not DBQueryHandler(db_client).user_exist_check(test_input['email']),\
-            f"Пользователь с почтой - {test_input['email']}, уже есть в БД"
+    """
+    Параметризованный тест с ошибочными данными при регистрации.
+    """
 
-    def test_register(self, http_client, test_input, expected):
+    def test_register(self, http_client: HttpClientOWF, test_data: dict):
         """
         Регистрация пользователя
         """
-        response = http_client.register(test_input)
+        response = http_client.register(test_data["input"])
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
         error_message = response.json().get('errorMessage')
-        assert error_message == expected, f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {expected}"
+        assert error_message == test_data["expected"], f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {expected}"
 
-    def test_find_user_after_registration(self, db_client, test_input, expected):
+    def test_find_user_after_registration(self, db_client: DBClient, test_data: dict):
         """
         Проверка на отсутствие  пользователя в БД.
         """
-        assert not DBQueryHandler(db_client).user_exist_check(test_input['email']),\
-            f"Пользователь с почтой - {test_input['email']}, присутствует  в БД"
+        test_input = test_data["input"]
+        users = db_client.get_users()
+        assert not DBQueryHandler().user_exist_check(users, test_input['email']),\
+            f"Пользователь с почтой - {test_input['email']} должен отсутствовать в БД. А он есть!! ;c"
 
 
-@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
+@pytest.mark.usefixtures('http_client', 'delete_user')
 class TestSuccessAutorization:
     """
     Тест на успешную авторизацию.
     """
 
-    def test_register(self, http_client):
+    def test_register(self, http_client: HttpClientOWF):
         """
         Регистрация пользователя
         """
@@ -97,7 +87,7 @@ class TestSuccessAutorization:
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_login(self, http_client):
+    def test_login(self, http_client: HttpClientOWF):
         """
         Авторизация с валидными данными
         """
@@ -106,13 +96,13 @@ class TestSuccessAutorization:
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
 
-@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
+@pytest.mark.usefixtures('http_client', 'delete_user')
 class TestFailedAutorizationBadLogin:
     """
     Авторизация с некоректным логином
     """
 
-    def test_register(self, http_client):
+    def test_register(self, http_client: HttpClientOWF):
         """
         Регистрация пользователя
         """
@@ -120,7 +110,7 @@ class TestFailedAutorizationBadLogin:
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_login(self, http_client):
+    def test_login(self, http_client: HttpClientOWF):
         """
         Авторизация с невалидным логином
         """
@@ -131,21 +121,21 @@ class TestFailedAutorizationBadLogin:
             f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {IdentityData.BAD_LOGIN['email']} не найден\""
 
 
-@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
+@pytest.mark.usefixtures('http_client', 'delete_user')
 class TestFailedAutorizationBadPassword:
     """
     Авторизация с некоректным паролем
     """
 
-    def test_register(self, http_client, user):
+    def test_register(self, http_client: HttpClientOWF):
         """
         Регистрация пользователя
         """
-        response = http_client.register(user)
+        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_login(self, http_client):
+    def test_login(self, http_client: HttpClientOWF):
         """
         Авторизация с невалидным паролем
         """

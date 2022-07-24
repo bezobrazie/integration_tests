@@ -1,6 +1,4 @@
 from psycopg2 import Error
-import psycopg2
-from config import DB_CONCTIONS_PARAMS
 
 
 class DBClient:
@@ -11,18 +9,6 @@ class DBClient:
 
     def __init__(self, connection):
         self.connection = connection
-
-    #TODO создать отдельный класс ДБ конекшн или вытащить его в фикстуры, метод нужно переименовать в глагол
-    @staticmethod
-    def connection():
-        """
-        Метод для создания конекта к БД используетс япри создании класса DBClient -_-
-        """
-        return psycopg2.connect(
-            dbname=DB_CONCTIONS_PARAMS.get('dbname'),
-            user=DB_CONCTIONS_PARAMS.get('user'),
-            password=DB_CONCTIONS_PARAMS.get('password'),
-            host=DB_CONCTIONS_PARAMS.get('host'))
 
     def get_users(self) -> list:
         """

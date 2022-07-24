@@ -1,9 +1,22 @@
 import pytest
-
+import psycopg2
 from appDriver.http_client import HttpClientOWF
-from config import BASE_URL_OFL
 from appDriver.db_client import DBClient
+from config import BASE_URL_OFL
+from config import DB_CONCTIONS_PARAMS
 from testData.identity_data import IdentityData
+
+
+
+def connect() -> psycopg2.connect:
+    """
+    Функция возвращает объект коннекта. Конект к БД используется при создании класса DBClient в фикстуре db_client.
+    """
+    return psycopg2.connect(
+        dbname=DB_CONCTIONS_PARAMS.get('dbname'),
+        user=DB_CONCTIONS_PARAMS.get('user'),
+        password=DB_CONCTIONS_PARAMS.get('password'),
+        host=DB_CONCTIONS_PARAMS.get('host'))
 
 
 @pytest.fixture(scope="session")
@@ -11,7 +24,7 @@ def db_client():
     """
     Создает экземпляр класса DBClient - клиент для работы с БД вместе с конекшеном, в тирдауне закрывает конекшн.
     """
-    connection = DBClient.connection()
+    connection = connect()
     yield DBClient(connection)
     connection.close()
 
@@ -25,26 +38,9 @@ def http_client():
 
 
 @pytest.fixture(scope="class")
-def user():
-    '''
-    Пробовал использовать данную фикстуру в тестах.
-    В setup cоздает пользователя на основе заготовленого словаря, в тир даун этого пользователя удаляет.
-    На данный момен нигде не используется. Можно его превратить в метод регистрации пользователя, тогда от него будет толк.
-    '''
-    connection = DBClient.connection()
-    USER = IdentityData.VALID_REGISTRATION_DATA
-    yield USER
-    DBClient(connection).delete_user(USER['email'])
-    connection.close()
-
-
-#TODO можно запихнуть фикстуру в фикстуру, попробовать засунуть db-client сюда
-@pytest.fixture(scope="class")
-def delete_user():
+def delete_user(db_client):
     """
     Фикстура для удаления пользователя после тестирвоания.\
     """
-    connection = DBClient.connection()
     yield
-    DBClient(connection).delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
-    connection.close()
+    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
