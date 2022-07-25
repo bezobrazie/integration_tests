@@ -5,6 +5,7 @@ from appDriver import DBClient
 from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
 from testData.identity_data import IdentityData
+from collections import defaultdict
 
 
 def connect() -> psycopg2.connect:
@@ -36,10 +37,37 @@ def http_client():
     return HttpClientOWF(BASE_URL_OFL)
 
 
-@pytest.fixture(scope="class", autouse=True)
-def delete_user(db_client):
+@pytest.fixture(scope="class")
+def delete_user_class(db_client):
     """
     Фикстура для удаления пользователя после тестирвоания.\
     """
     yield
     db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
+
+
+@pytest.fixture(scope="function")
+def delete_user_func(db_client):
+    """
+    Фикстура для удаления пользователя после тестирвоания, .
+    """
+    yield
+    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
+
+# Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал. 
+__TEST_FAILED_INCREMENTAL = defaultdict(dict)
+
+
+def pytest_runtest_makereport(item, call):
+    if "incremental" in item.keywords:
+        if call.excinfo is not None and call.excinfo.typename != "Skipped":
+            param = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+            __TEST_FAILED_INCREMENTAL[str(item.cls)].setdefault(param, item.originalname or item.name)
+
+
+def pytest_runtest_setup(item):
+    if "incremental" in item.keywords:
+        param = tuple(item.callspec.indices.values()) if hasattr(item, "callspec") else ()
+        originalname = __TEST_FAILED_INCREMENTAL[str(item.cls)].get(param)
+        if originalname:
+            pytest.xfail("previous test failed ({})".format(originalname))

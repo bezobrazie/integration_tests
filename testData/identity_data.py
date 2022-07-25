@@ -1,8 +1,10 @@
+from testData.context import TestContext
+
+
 class IdentityData:
     """
     Класс хранения данных для тестирования
     """
-
     # Данные используемые для успешной решистрации
     VALID_REGISTRATION_DATA = {
         "email": "post@mail.ru",
@@ -65,6 +67,7 @@ class IdentityData:
         "password": "Test123456"
     }
 
+    # TODO: Все тест данные обернуть в контекст, как это сделано с DATA_FOR_BAD_AUTH
     # Данные используемые в параметризации для негативных тестов регистрации
     DATA_FOR_BAD_REG = [
         {"input": BAD_CONFIRM_PASSWORD_REGISTRATION_DATA,
@@ -78,12 +81,14 @@ class IdentityData:
          "case_name": "Phone number doesn't pass regular expression"}
     ]
 
-    # Данные используемые в параметризации для негативных тестов авторизации
+    # Данные используемые в параметризации для негативных тестов авторизации, обернуты в контекст
     DATA_FOR_BAD_AUTH = [
-        {"input": BAD_LOGIN,
+        TestContext.from_dict({
+         "input": BAD_LOGIN,
          "expected": f"Пользователь с email {BAD_LOGIN['email']} не найден",
-         "case_name": "Login with incorrect login"},
-        {"input": BAD_PASSWORD,
+         "case_name": "Login with incorrect login"}),
+        TestContext.from_dict({
+         "input": BAD_PASSWORD,
          "expected": "Неверный пароль",
-         "case_name": "Login with incorrect password"}
+         "case_name": "Login with incorrect password"})
     ]

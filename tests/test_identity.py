@@ -3,14 +3,16 @@ from testData.identity_data import IdentityData
 from testLogic.db_query_handler import DBQueryHandler
 from appDriver import DBClient
 from appDriver import HttpClientOWF
+from testData.context import TestContext
 
-#TODO Регистрация Пустые поля (параметризованный)
-#TODO Авторизация пустые поля
-#TODO Авторизация невалидные поля (параметризованый)
-#TODO Тест на протухший токен
+# TODO Тест на регистрацию с пустыми полями
+# TODO Тест на авторизацию с пустыми полями
+# TODO Тест на авторизацию с невалидными полями (параметризованый)
+# TODO Тест на протухший токен
 
 
-@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
+@pytest.mark.incremental
+@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user_class')
 class TestSuccessRegistration:
     """
     Тест-кейс на регистрацию. Проверяет: регистрацию и повторную регистрацию.
@@ -43,11 +45,12 @@ class TestSuccessRegistration:
             f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA['email']}, отсутствует в БД"
 
 
+@pytest.mark.incremental
 @pytest.mark.parametrize(argnames="test_data",
                          argvalues=IdentityData.DATA_FOR_BAD_REG,
                          scope="class",
                          ids=[cases['case_name'] for cases in IdentityData.DATA_FOR_BAD_REG])
-@pytest.mark.usefixtures('db_client', 'http_client', 'delete_user')
+@pytest.mark.usefixtures('db_client', 'http_client')
 class TestBadDataRegistration:
     """
     Параметризованный тест с ошибочными данными при регистрации.
@@ -63,6 +66,7 @@ class TestBadDataRegistration:
         error_message = response.json().get('errorMessage')
         assert error_message == test_data["expected"], f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {test_data['expected']}"
 
+    @pytest.mark.usefixtures('delete_user_func')
     def test_find_user_after_registration(self, db_client: DBClient, test_data: dict):
         """
         Проверка на отсутствие  пользователя в БД.
@@ -73,7 +77,8 @@ class TestBadDataRegistration:
             f"Пользователь с почтой - {test_input['email']} должен отсутствовать в БД. А он есть!! ;c"
 
 
-@pytest.mark.usefixtures('http_client', 'delete_user')
+@pytest.mark.incremental
+@pytest.mark.usefixtures('http_client', 'delete_user_class')
 class TestSuccessAutorization:
     """
     Тест на успешную авторизацию.
@@ -96,17 +101,18 @@ class TestSuccessAutorization:
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
 
+@pytest.mark.incremental
 @pytest.mark.parametrize(argnames="test_data",
                          argvalues=IdentityData.DATA_FOR_BAD_AUTH,
                          scope="class",
-                         ids=[cases['case_name'] for cases in IdentityData.DATA_FOR_BAD_AUTH])
-@pytest.mark.usefixtures('http_client', 'delete_user')
+                         ids=[cases.get("case_name") for cases in IdentityData.DATA_FOR_BAD_AUTH])
+@pytest.mark.usefixtures('http_client')
 class TestFailedAutorization:
     """
     Авторизация с некорректными данными
     """
 
-    def test_register(self, http_client: HttpClientOWF, test_data):
+    def test_register(self, http_client: HttpClientOWF, test_data: TestContext):
         """
         Регистрация пользователя
         """
@@ -115,13 +121,14 @@ class TestFailedAutorization:
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
-    def test_login(self, http_client: HttpClientOWF, test_data: dict):
+    @pytest.mark.usefixtures('delete_user_func')
+    def test_login(self, http_client: HttpClientOWF, test_data: TestContext):
         """
         Авторизация с невалидным логином
         """
-        input = test_data["input"]
+        input = test_data.get("input")
         response = http_client.login(input)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == test_data["expected"],\
+        assert response.json().get('errorMessage') == test_data.get('expected'),\
             f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {input['email']} не найден\""
