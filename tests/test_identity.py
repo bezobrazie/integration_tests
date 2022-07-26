@@ -1,9 +1,9 @@
 import pytest
-from testData.identity_data import IdentityData
+from testData import IdentityData
+from testData import TestContext
 from testLogic.db_query_handler import DBQueryHandler
 from appDriver import DBClient
 from appDriver import HttpClientOWF
-from testData.context import TestContext
 
 # TODO Тест на регистрацию с пустыми полями
 # TODO Тест на авторизацию с пустыми полями
@@ -22,7 +22,7 @@ class TestSuccessRegistration:
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
+        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -30,48 +30,48 @@ class TestSuccessRegistration:
         """
         Повторная регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
+        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA['email']} уже зарегистрирован",\
-            f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA['email']} успешно повторно зарегистрировался"
+        assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('email')} уже зарегистрирован",\
+            f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('email')} успешно повторно зарегистрировался"
 
     def test_find_user_after_registration(self, db_client: DBClient):
         """
         Проверка наличия пользователя в БД. После регистрации, пользователь должен быть в БД.
         """
         users = db_client.get_users()
-        assert DBQueryHandler().user_exist_check(users, IdentityData.VALID_REGISTRATION_DATA['email']),\
-            f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA['email']}, отсутствует в БД"
+        assert DBQueryHandler().user_exist_check(users, IdentityData.VALID_REGISTRATION_DATA.get('email')),\
+            f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA.get('email')}, отсутствует в БД"
 
 
 @pytest.mark.incremental
 @pytest.mark.parametrize(argnames="test_data",
                          argvalues=IdentityData.DATA_FOR_BAD_REG,
                          scope="class",
-                         ids=[cases['case_name'] for cases in IdentityData.DATA_FOR_BAD_REG])
+                         ids=[cases.get("case_name") for cases in IdentityData.DATA_FOR_BAD_REG])
 @pytest.mark.usefixtures('db_client', 'http_client')
 class TestBadDataRegistration:
     """
     Параметризованный тест с ошибочными данными при регистрации.
     """
 
-    def test_register(self, http_client: HttpClientOWF, test_data: dict):
+    def test_register(self, http_client: HttpClientOWF, test_data: TestContext):
         """
         Регистрация пользователя
         """
-        response = http_client.register(test_data["input"])
+        response = http_client.register(test_data.get("input"))
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
         error_message = response.json().get('errorMessage')
-        assert error_message == test_data["expected"], f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {test_data['expected']}"
+        assert error_message == test_data.get("expected"), f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {test_data.get('expected')}"
 
     @pytest.mark.usefixtures('delete_user_func')
-    def test_find_user_after_registration(self, db_client: DBClient, test_data: dict):
+    def test_find_user_after_registration(self, db_client: DBClient, test_data: TestContext):
         """
         Проверка на отсутствие  пользователя в БД.
         """
-        test_input = test_data["input"]
+        test_input = test_data.get("input")
         users = db_client.get_users()
         assert not DBQueryHandler().user_exist_check(users, test_input['email']),\
             f"Пользователь с почтой - {test_input['email']} должен отсутствовать в БД. А он есть!! ;c"
@@ -88,7 +88,7 @@ class TestSuccessAutorization:
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
+        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -96,7 +96,8 @@ class TestSuccessAutorization:
         """
         Авторизация с валидными данными
         """
-        response = http_client.login(IdentityData.VALID_AUTORIZATION)
+        response = http_client.login({"email": IdentityData.VALID_REGISTRATION_DATA.get("email"),
+                                      "password": IdentityData.VALID_REGISTRATION_DATA.get("password")})
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -116,7 +117,7 @@ class TestFailedAutorization:
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA)
+        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
         print(response.json())
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
