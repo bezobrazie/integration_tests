@@ -4,7 +4,7 @@ from appDriver import HttpClientOWF
 from appDriver import DBClient
 from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
-from testData.identity_data import IdentityData
+from testData import IdentityData
 from collections import defaultdict
 
 
@@ -43,7 +43,7 @@ def delete_user_class(db_client):
     Фикстура для удаления пользователя после тестирвоания.\
     """
     yield
-    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
+    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA.get("email"))
 
 
 @pytest.fixture(scope="function")
@@ -52,9 +52,10 @@ def delete_user_func(db_client):
     Фикстура для удаления пользователя после тестирвоания, .
     """
     yield
-    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA['email'])
+    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA.get("email"))
 
-# Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал. 
+
+# Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал.
 __TEST_FAILED_INCREMENTAL = defaultdict(dict)
 
 
