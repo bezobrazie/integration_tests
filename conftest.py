@@ -6,7 +6,7 @@ from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
 from testData import IdentityData
 from collections import defaultdict
-
+from testData.models.view_models import RegisterVM
 
 def connect() -> psycopg2.connect:
     """
@@ -46,13 +46,15 @@ def delete_user_class(db_client):
     db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA.get("email"))
 
 
+# TODO чистить нужно всю таблицу после себя. Или думать над методом который будет пользователей зареганых на сеанс.
 @pytest.fixture(scope="function")
 def delete_user_func(db_client):
     """
     Фикстура для удаления пользователя после тестирвоания, .
     """
     yield
-    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA.get("email"))
+    date_for_delete: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get("valid_data")
+    db_client.delete_user(date_for_delete.email)
 
 
 # Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал.
