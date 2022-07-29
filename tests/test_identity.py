@@ -4,6 +4,7 @@ from testData import TestContext
 from testLogic.db_query_handler import DBQueryHandler
 from appDriver import DBClient
 from appDriver import HttpClientOWF
+from testData.models.view_models import RegisterVM, LoginVM
 
 # TODO Тест на регистрацию с пустыми полями
 # TODO Тест на авторизацию с пустыми полями
@@ -22,7 +23,8 @@ class TestSuccessRegistration:
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
+        valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
+        response = http_client.register(valid_data)
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -30,18 +32,20 @@ class TestSuccessRegistration:
         """
         Повторная регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
+        valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
+        response = http_client.register(valid_data)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('email')} уже зарегистрирован",\
-            f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('email')} успешно повторно зарегистрировался"
+        assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('valid_data').email} уже зарегистрирован",\
+            f"Пользователь с Email: {valid_data.email} успешно повторно зарегистрировался"
 
     def test_find_user_after_registration(self, db_client: DBClient):
         """
         Проверка наличия пользователя в БД. После регистрации, пользователь должен быть в БД.
         """
         users = db_client.get_users()
-        assert DBQueryHandler().user_exist_check(users, IdentityData.VALID_REGISTRATION_DATA.get('email')),\
+        valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
+        assert DBQueryHandler().user_exist_check(users, valid_data.email),\
             f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA.get('email')}, отсутствует в БД"
 
 
