@@ -5,6 +5,8 @@ from testLogic.db_query_handler import DBQueryHandler
 from appDriver import DBClient
 from appDriver import HttpClientOWF
 from testData.models.view_models import RegisterVM, LoginVM
+from testData.models.parametrize_models import ParametrizeModel
+
 
 # TODO Тест на регистрацию с пустыми полями
 # TODO Тест на авторизацию с пустыми полями
@@ -53,7 +55,7 @@ class TestSuccessRegistration:
 @pytest.mark.parametrize(argnames="test_data",
                          argvalues=IdentityData.DATA_FOR_BAD_REG,
                          scope="class",
-                         ids=[cases.get("case_name") for cases in IdentityData.DATA_FOR_BAD_REG])
+                         ids=[cases.get("case").case_name for cases in IdentityData.DATA_FOR_BAD_REG])
 @pytest.mark.usefixtures('db_client', 'http_client')
 class TestBadDataRegistration:
     """
@@ -64,20 +66,22 @@ class TestBadDataRegistration:
         """
         Регистрация пользователя
         """
-        response = http_client.register(test_data.get("input"))
+        date_for_test: ParametrizeModel = test_data.get("case")
+        response = http_client.register(date_for_test.input)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
         error_message = response.json().get('errorMessage')
-        assert error_message == test_data.get("expected"), f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {test_data.get('expected')}"
+        assert error_message == date_for_test.expected, f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {date_for_test.expected}"
 
     @pytest.mark.usefixtures('delete_user_func')
     def test_find_user_after_registration(self, db_client: DBClient, test_data: TestContext):
         """
         Проверка на отсутствие  пользователя в БД.
         """
-        test_input = test_data.get("input")
+        date_for_test: ParametrizeModel = test_data.get("case")
+        test_input: RegisterVM = date_for_test.input
         users = db_client.get_users()
-        assert not DBQueryHandler().user_exist_check(users, test_input['email']),\
+        assert not DBQueryHandler().user_exist_check(users, test_input.email),\
             f"Пользователь с почтой - {test_input['email']} должен отсутствовать в БД. А он есть!! ;c"
 
 
@@ -92,7 +96,8 @@ class TestSuccessAutorization:
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
+        valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
+        response = http_client.register(valid_data)
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -100,8 +105,8 @@ class TestSuccessAutorization:
         """
         Авторизация с валидными данными
         """
-        response = http_client.login({"email": IdentityData.VALID_REGISTRATION_DATA.get("email"),
-                                      "password": IdentityData.VALID_REGISTRATION_DATA.get("password")})
+        data_for_login: LoginVM = IdentityData.AUTORIZATION_DATA.get("valid_data")
+        response = http_client.login(data_for_login)
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -110,19 +115,19 @@ class TestSuccessAutorization:
 @pytest.mark.parametrize(argnames="test_data",
                          argvalues=IdentityData.DATA_FOR_BAD_AUTH,
                          scope="class",
-                         ids=[cases.get("case_name") for cases in IdentityData.DATA_FOR_BAD_AUTH])
+                         ids=[cases.get('case').case_name for cases in IdentityData.DATA_FOR_BAD_AUTH])
 @pytest.mark.usefixtures('http_client')
 class TestFailedAutorization:
     """
     Авторизация с некорректными данными
     """
 
-    def test_register(self, http_client: HttpClientOWF, test_data: TestContext):
+    def test_register(self, http_client: HttpClientOWF, test_data):
         """
         Регистрация пользователя
         """
-        response = http_client.register(IdentityData.VALID_REGISTRATION_DATA.get_dict())
-        print(response.json())
+        valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
+        response = http_client.register(valid_data)
 
         assert response.status_code == 200, f'Статус код = {response.status_code}, должен быть 200'
 
@@ -131,9 +136,9 @@ class TestFailedAutorization:
         """
         Авторизация с невалидным логином
         """
-        input = test_data.get("input")
-        response = http_client.login(input)
+        date_for_test: ParametrizeModel = test_data.get("case")
+        response = http_client.login(date_for_test.input)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == test_data.get('expected'),\
+        assert response.json().get('errorMessage') == date_for_test.expected,\
             f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {input['email']} не найден\""

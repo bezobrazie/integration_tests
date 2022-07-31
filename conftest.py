@@ -8,6 +8,7 @@ from testData import IdentityData
 from collections import defaultdict
 from testData.models.view_models import RegisterVM
 
+
 def connect() -> psycopg2.connect:
     """
     Функция возвращает объект коннекта. Конект к БД используется при создании класса DBClient в фикстуре db_client.
@@ -37,13 +38,15 @@ def http_client():
     return HttpClientOWF(BASE_URL_OFL)
 
 
+# TODO чистить нужно всю таблицу после себя. Или думать над методом который будет пользователей зареганых на сеанс.
 @pytest.fixture(scope="class")
 def delete_user_class(db_client):
     """
     Фикстура для удаления пользователя после тестирвоания.\
     """
     yield
-    db_client.delete_user(IdentityData.VALID_REGISTRATION_DATA.get("email"))
+    date_for_delete: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get("valid_data")
+    db_client.delete_user(date_for_delete.email)
 
 
 # TODO чистить нужно всю таблицу после себя. Или думать над методом который будет пользователей зареганых на сеанс.
