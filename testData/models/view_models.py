@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from dataclass_wizard import JSONWizard
 from typing import Optional
+from pydantic import BaseModel
 
 
-@dataclass
-class RegisterVM(JSONWizard):
+class RegisterVM(BaseModel):
     """ Модель представления данных для регистрации"""
     email: str
     password: str
@@ -15,7 +13,6 @@ class RegisterVM(JSONWizard):
     phoneNumber: str
 
 
-@dataclass
-class LoginVM(JSONWizard):
+class LoginVM(BaseModel):
     email: str
     password: str

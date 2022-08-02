@@ -38,7 +38,7 @@ class TestSuccessRegistration:
         response = http_client.register(valid_data)
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
-        assert response.json().get('errorMessage') == f"Пользователь с Email: {IdentityData.VALID_REGISTRATION_DATA.get('valid_data').email} уже зарегистрирован",\
+        assert response.json().get('errorMessage') == f"Пользователь с Email: {valid_data.email} уже зарегистрирован",\
             f"Пользователь с Email: {valid_data.email} успешно повторно зарегистрировался"
 
     def test_find_user_after_registration(self, db_client: DBClient):
@@ -48,7 +48,7 @@ class TestSuccessRegistration:
         users = db_client.get_users()
         valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
         assert DBQueryHandler().user_exist_check(users, valid_data.email),\
-            f"Пользователь с почтой - {IdentityData.VALID_REGISTRATION_DATA.get('email')}, отсутствует в БД"
+            f"Пользователь с почтой - {valid_data.email}, отсутствует в БД"
 
 
 @pytest.mark.incremental
@@ -82,7 +82,7 @@ class TestBadDataRegistration:
         test_input: RegisterVM = date_for_test.input
         users = db_client.get_users()
         assert not DBQueryHandler().user_exist_check(users, test_input.email),\
-            f"Пользователь с почтой - {test_input['email']} должен отсутствовать в БД. А он есть!! ;c"
+            f"Пользователь с почтой - {test_input.email} должен отсутствовать в БД. А он есть!! ;c"
 
 
 @pytest.mark.incremental
@@ -141,4 +141,4 @@ class TestFailedAutorization:
 
         assert response.status_code == 400, f'Статус код = {response.status_code}, должен быть 400'
         assert response.json().get('errorMessage') == date_for_test.expected,\
-            f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому f\"Пользователь с email {input['email']} не найден\""
+            f"Сообщение {response.json().get('errorMessage')} не равно ожидаемому \"Пользователь с email {date_for_test.input.email} не найден\""
