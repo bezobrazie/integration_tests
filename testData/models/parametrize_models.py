@@ -1,10 +1,8 @@
-from dataclasses import dataclass
-from dataclass_wizard import JSONWizard
 from typing import Any
+from pydantic import BaseModel
 
 
-@dataclass
-class ParametrizeModel(JSONWizard):
+class ParametrizeModel(BaseModel):
     """ Модель данных для использования параметризации в тестах"""
     input: Any
     expected: str

@@ -23,7 +23,7 @@ class HttpClientOWF:
         :param register_vm: параметр с моделью данных для регистрации
         :return: объект с информацией об ответе на запрос
         """
-        return requests.post(url=urljoin(self.base_url, self.REGISTER_ROUTE), json=register_vm.to_dict())
+        return requests.post(url=urljoin(self.base_url, self.REGISTER_ROUTE), json=register_vm.dict())
 
     def login(self, login_vm: LoginVM) -> requests.Response:
         """
@@ -31,4 +31,4 @@ class HttpClientOWF:
         :param login_vm: параметр с моделью данных для авторизации
         :return: объект с информацией об ответе на запрос
         """
-        return requests.post(url=urljoin(self.base_url, "api/auth/login"), json=login_vm.to_dict())
+        return requests.post(url=urljoin(self.base_url, "api/auth/login"), json=login_vm.dict())
