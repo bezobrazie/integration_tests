@@ -11,6 +11,7 @@ class HttpClientOWF:
     http://localhost:8000/api-docs/index.html
     """
 
+    # эндпойнты используемые в методах
     REGISTER_ROUTE = "api/auth/register"
     LOGIN_ROUTE = "api/auth/login"
 

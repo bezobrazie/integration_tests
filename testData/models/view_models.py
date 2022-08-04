@@ -14,5 +14,6 @@ class RegisterVM(BaseModel):
 
 
 class LoginVM(BaseModel):
+    """ Модель представления данных для авторизации"""
     email: str
     password: str
