@@ -1,12 +1,14 @@
 from uuid import UUID
 from typing import Optional
 from datetime import datetime
-from dataclasses import dataclass
-from dataclass_wizard import JSONWizard
+
+from pydantic import BaseModel
 
 
-@dataclass
-class User(JSONWizard):
+class User(BaseModel):
+    """
+    Модель представления данных из таблицы users
+    """
     id: UUID
     first_name: str
     last_name: str
