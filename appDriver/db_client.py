@@ -1,23 +1,26 @@
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
 
+from appDriver.db_query_variables import DBQueryVariables
+
 
 class DBClient:
     """
-    Клиент для рабоыт с БД.
+    Клиент для работы с БД.
     connection описан в staticmethod connection
     """
 
     def __init__(self, connection):
         self.connection = connection
 
+    # TODO нужно возвращать список юзеров датакласами
     def get_users(self) -> list:
         """
         Получение всех пользователей
         :return: возвращает список всех пользователей в базе
         """
         with self.connection.cursor(cursor_factory=RealDictCursor) as cursor:
-            cursor.execute("SELECT * from users")
+            cursor.execute(DBQueryVariables.SELECT_ALL_USERS_QUERY)
             return cursor.fetchall()
 
     def delete_user(self, email: str):
@@ -27,7 +30,7 @@ class DBClient:
         """
         try:
             with self.connection.cursor() as cursor:
-                cursor.execute(f"delete from \"AspNetUsers\" where user_name = '{email}'")
+                cursor.execute(DBQueryVariables.DELETE_USER_BY_EMAIL_QUERY(email))
                 self.connection.commit()
                 count = cursor.rowcount
                 print(count, f"Пользователь {email} успешно удален")
