@@ -1,9 +1,10 @@
 import pytest
+
 from testData import IdentityData
 from testData import TestContext
-from testLogic.db_query_handler import DBQueryHandler
 from appDriver import DBClient
 from appDriver import HttpClientOWF
+from testLogic.db_query_handler import DBQueryHandler
 from testData.models.view_models import RegisterVM, LoginVM
 from testData.models.parametrize_models import ParametrizeModel
 
