@@ -7,6 +7,7 @@ from appDriver import HttpClientOWF
 from testLogic.db_query_handler import DBQueryHandler
 from testData.models.view_models import RegisterVM, LoginVM
 from testData.models.parametrize_models import ParametrizeModel
+from testData.models.db_models import User
 
 
 # TODO Тест на регистрацию с пустыми полями
@@ -46,7 +47,7 @@ class TestSuccessRegistration:
         """
         Проверка наличия пользователя в БД. После регистрации, пользователь должен быть в БД.
         """
-        users = db_client.get_users()
+        users: list[User] = db_client.get_users()
         valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
         assert DBQueryHandler().user_exist_check(users, valid_data.email),\
             f"Пользователь с почтой - {valid_data.email}, отсутствует в БД"
