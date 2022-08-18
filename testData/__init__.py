@@ -1,2 +1,2 @@
 from .context import TestContext
-from .identity_data import IdentityData
+from testData.scenarios.identity_scenarios.identity_data import IdentityData

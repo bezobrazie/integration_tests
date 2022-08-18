@@ -1,7 +1,7 @@
 from psycopg2 import Error
 from psycopg2.extras import RealDictCursor
 
-from appDriver.db_query_variables import DBQueryVariables
+from appDriver.dbDriver.db_query_variables import DBQueryVariables
 from testData.models.db_models import User
 
 

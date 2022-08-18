@@ -2,7 +2,7 @@ import requests
 from urllib.parse import urljoin
 
 from testData.models.view_models import RegisterVM, LoginVM
-from appDriver.endpoint_variables import EndpointVariables
+from appDriver.httpDriver.endpoint_variables import EndpointVariables
 
 
 class HttpClientOWF:

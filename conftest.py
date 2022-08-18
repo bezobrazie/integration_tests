@@ -1,32 +1,26 @@
 import pytest
 import psycopg2
+
 from appDriver import HttpClientOWF
-from appDriver import DBClient
 from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
-from testData import IdentityData
 from collections import defaultdict
-from testData.models.view_models import RegisterVM
 
 
-def connect() -> psycopg2.connect:
+@pytest.fixture(scope='session')
+def db_connection() -> psycopg2.connect:
     """
     Функция возвращает объект коннекта. Конект к БД используется при создании класса DBClient в фикстуре db_client.
     """
-    return psycopg2.connect(
+    connection = psycopg2.connect(
         dbname=DB_CONCTIONS_PARAMS.get('dbname'),
         user=DB_CONCTIONS_PARAMS.get('user'),
         password=DB_CONCTIONS_PARAMS.get('password'),
-        host=DB_CONCTIONS_PARAMS.get('host'))
+        host=DB_CONCTIONS_PARAMS.get('host')
+    )
 
+    yield connection
 
-@pytest.fixture(scope="session")
-def db_client():
-    """
-    Создает экземпляр класса DBClient - клиент для работы с БД вместе с конекшеном, в тирдауне закрывает конекшн.
-    """
-    connection = connect()
-    yield DBClient(connection)
     connection.close()
 
 
@@ -36,28 +30,6 @@ def http_client():
     Создает экземпляр класса HttpClientOWF - клиент для работы с HTTP запросами
     """
     return HttpClientOWF(BASE_URL_OFL)
-
-
-# TODO чистить нужно всю таблицу после себя. Или думать над методом который будет пользователей зареганых на сеанс.
-@pytest.fixture(scope="class")
-def delete_user_class(db_client):
-    """
-    Фикстура для удаления пользователя после тестирвоания.\
-    """
-    yield
-    date_for_delete: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get("valid_data")
-    db_client.delete_user(date_for_delete.email)
-
-
-# TODO чистить нужно всю таблицу после себя. Или думать над методом который будет пользователей зареганых на сеанс.
-@pytest.fixture(scope="function")
-def delete_user_func(db_client):
-    """
-    Фикстура для удаления пользователя после тестирвоания, .
-    """
-    yield
-    date_for_delete: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get("valid_data")
-    db_client.delete_user(date_for_delete.email)
 
 
 # Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал.
