@@ -1,7 +1,19 @@
+import json
+import os
 from datetime import datetime
 from uuid import UUID
 
 from testData.models.db_models import User, IdentityUser
+from config import TEST_DATA_DIR
+from testData import TestContext
+
+from testData.models.view_models import CreateAccountVM
+
+# Путь до папки с тестовыми данными
+TEST_DATA_PATH = os.path.join(TEST_DATA_DIR, "scenarios", "create_account_scenario")
+
+SCENARIO_CONT = TestContext.from_json_file(os.path.join(TEST_DATA_PATH,  "scenario_1.json"))
+
 
 
 # Данные используются в DBSeeder для подготовки базы к тестам.

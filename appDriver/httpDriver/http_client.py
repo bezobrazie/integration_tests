@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin
 
-from testData.models.view_models import RegisterVM, LoginVM
+from testData.models.view_models import RegisterVM, LoginVM, CreateAccountVM
 from appDriver.httpDriver.endpoint_variables import EndpointVariables
 
 
@@ -31,3 +31,12 @@ class HttpClientOWF:
         :return: объект с информацией об ответе на запрос
         """
         return requests.post(url=urljoin(self.base_url, EndpointVariables.LOGIN_ROUTE), json=login_vm.dict())
+
+    def create_account(self, token: str, create_account_vm: CreateAccountVM) -> requests.Response:
+        """
+        Метод для создания нового счета
+        :param: :
+        """
+        return requests.post(url=urljoin(self.base_url, EndpointVariables.CREATE_ACCOUNT_ROUTE),
+                             json=create_account_vm.dict(),
+                             headers={"Authorization": f"Bearer {token}"})
