@@ -2,7 +2,7 @@ import pytest
 
 from appDriver.dbDriver.db_seeder import DBSeeder
 from appDriver.dbDriver.db_cleaner import DBCleaner
-from testData.scenarios.cteate_account_scenario import INITIAL_DATA
+from testData.scenarios.create_account_scenario import INITIAL_DATA
 
 
 @pytest.fixture(scope='session')
@@ -15,4 +15,5 @@ def seed_data_before_scenario(db_connection):
     db_cleaner = DBCleaner(db_connection)
     db_seeder.seed_users(INITIAL_DATA['users'])
     yield
-    db_cleaner.clean_users()
+    tables = ["users", '\"AspNetUsers\"']
+    db_cleaner.clean_tables(tables)
