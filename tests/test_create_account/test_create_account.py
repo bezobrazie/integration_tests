@@ -1,21 +1,73 @@
-import os
-
 import pytest
 
-from testData.models.view_models import CreateAccountVM
 from appDriver import HttpClientOWF
-from testData.scenarios.create_account_scenario import SCENARIO_CONT
-from config import TEST_DATA_DIR
-
-# Путь до папки с тестовыми данными
-TEST_DATA_PATH = os.path.join(TEST_DATA_DIR, "scenarios", "create_account_scenario")
+from testData import TestContext
+from testData.models.view_models import CreateAccountVM, LoginVM
+from testData.scenarios.create_account_scenario import SUCCESS_SCENARIO, WITHOUT_PERSONAL_DATA_SCENARIO
 
 
 @pytest.mark.incremental
-@pytest.mark.usefixtures('seed_data_before_scenario', 'http_client')
-def test_create_account(http_client: HttpClientOWF):
-    # вначале логинимся и забираем из запроса токен
-    # пишем токен в тест контекст и передаем его дальше
-    data_for_create_account: CreateAccountVM = CreateAccountVM.parse_obj(SCENARIO_CONT.get('account'))
-    response = http_client.create_account(data_for_create_account)
-    print(response.text)
+@pytest.mark.parametrize(argnames="test_data",
+                         argvalues=SUCCESS_SCENARIO,
+                         scope="class",
+                         ids=[cases.get('name_case') for cases in SUCCESS_SCENARIO])
+@pytest.mark.usefixtures('seed_users_before_scenario',
+                         'seed_addresses_before_scenario',
+                         'seed_passports_before_scenario',
+                         'http_client')
+class TestCreateAccount:
+    # создаем экземпляр контекста для передачи данных между шагами теста
+    context = TestContext()
+
+    def test_get_token(self, http_client: HttpClientOWF, test_data: TestContext):
+        """Получаем токен перед тестированием и передаем его в контекст"""
+        data_for_login: LoginVM = LoginVM.parse_obj(test_data.get('data_for_login'))
+
+        response_json = http_client.login(data_for_login).json()
+        token = response_json['accessToken']
+        self.context.add('accessToken', token)
+
+    def test_create_account(self, http_client: HttpClientOWF, test_data: TestContext):
+        """Попытка создания аккаунта"""
+        data_for_create_account: CreateAccountVM = CreateAccountVM.parse_obj(test_data.get('account'))
+        token = self.context.get('accessToken')
+
+        response = http_client.create_account(token, data_for_create_account)
+        assert response.status_code == 200, f"Статус ответа равен {response.status_code}, ожидалось 200"
+
+    def test_asserts(self, test_data: TestContext):
+        """Проверки"""
+        # добавить проверки на наличие в базе
+        # совпадение user_id
+        # проверка на значение в поле amount == 500,3
+        # проверка на state == 1
+        # проверка на время
+        ...
+
+
+@pytest.mark.incremental
+@pytest.mark.usefixtures('seed_users_before_scenario', 'http_client')
+class TestCreateAccountWithoutPersonalData:
+    """
+    Тест на проверку эксепшена в случае регистрации без заполнения персональных данных.
+    """
+    # создаем экземпляр контекста для передачи данных между шагами теста
+    context = TestContext()
+
+    def test_get_token(self, http_client: HttpClientOWF):
+        """Получаем токен перед тестированием и передаем его в контекст"""
+        data_for_login: LoginVM = LoginVM.parse_obj(WITHOUT_PERSONAL_DATA_SCENARIO.get('data_for_login'))
+
+        response_json = http_client.login(data_for_login).json()
+        token = response_json['accessToken']
+        self.context.add('accessToken', token)
+
+    def test_create_account(self, http_client: HttpClientOWF):
+        """Попытка создания аккаунта"""
+        data_for_create_account: CreateAccountVM = CreateAccountVM.parse_obj(WITHOUT_PERSONAL_DATA_SCENARIO.get('account'))
+        token = self.context.get('accessToken')
+
+        response = http_client.create_account(token, data_for_create_account)
+        # добавить проверка на отсутствие аккаунта в базе, возможно вынести ассерты в отдельный метод
+        assert response.status_code == 400, f"Статус ответа равен {response.status_code}, ожидалось 400"
+        assert response.json().get('errorMessage') == f"Перед созданием счёта необходимо заполнить личные данные"

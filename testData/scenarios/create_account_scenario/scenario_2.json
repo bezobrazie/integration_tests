@@ -1,11 +1,11 @@
 {
   "account": {
     "type": 1,
-    "amount": 500.3
+    "amount": 123
   },
   "data_for_login" : {
     "email": "post@mail.ru",
     "password": "Test123456"
   },
-  "name_case": "500.3 coin"
+  "name_case": "123 coin"
 }

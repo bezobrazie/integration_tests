@@ -17,10 +17,14 @@ class DBQueryVariables:
     # лямбда функция возвращает
     DELETE_TABLE_QUERY: Callable[[str], str] = lambda table: f"DELETE FROM {table};"
 
-    # TODO сделать строку через SQL()
     # запрос на добавление пользователя в таблицу users
     INSERT_USER_QUERY = "INSERT INTO users VALUES\n"
 
-    # TODO сделать строку через SQL()
+    # запрос на добавление адреса в таблицу addresses
+    INSERT_ADDRESS_QUERY = "INSERT INTO addresses VALUES\n"
+
+    # запрос на добавление адреса в таблицу passports
+    INSERT_PASSPORTS_QUERY = "INSERT INTO passports VALUES\n"
+
     # запрос на добавление пользователя в таблицу AspNetUsers
     INSERT_ASP_NET_USERS_QUERY = "INSERT INTO \"AspNetUsers\" VALUES\n"
