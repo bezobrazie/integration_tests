@@ -83,7 +83,7 @@ class TestBadDataRegistration:
     @pytest.mark.usefixtures('delete_user_func')
     def test_find_user_after_registration(self, db_connection: psycopg2.connect, test_data: TestContext):
         """
-        Проверка на отсутствие  пользователя в БД.
+        Проверка на отсутствие пользователя в БД.
         """
         date_for_test: ParametrizeModel = test_data.get("case")
         test_input: RegisterVM = date_for_test.input

@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field, UUID4
 
 
+# TODO: информация об опциональности полей не актуальна
 class User(BaseModel):
     """
     Модель представления данных из таблицы users
@@ -42,3 +43,34 @@ class IdentityUser(BaseModel):
     access_failed_count: int
 
 
+class Address(BaseModel):
+    """
+    Модель представления данных из таблицы addresses
+    """
+    id: UUID
+    post_index: int
+    region_code: int
+    region_name: str
+    area: str
+    city: str
+    locality: str
+    street: str
+    house: str
+    housing: str
+    apartment: str
+    user_id: UUID
+
+
+class Passport(BaseModel):
+    """
+    Модель представления данных из таблицы passports
+    """
+    id: UUID
+    series: str
+    number: str
+    department_code:  str
+    birth_date: datetime
+    issue_date: datetime
+    birth_place: str
+    issuer: str
+    user_id: UUID
