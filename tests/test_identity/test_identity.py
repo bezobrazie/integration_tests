@@ -3,8 +3,7 @@ import pytest
 
 from testData import IdentityData
 from testData import TestContext
-from appDriver import DBClient
-from appDriver import HttpClientOWF
+from appDriver import DBClient, HttpClientOWF
 from testLogic import DBQueryHandler
 from testData.models.view_models import RegisterVM, LoginVM
 from testData.models.parametrize_models import ParametrizeModel
@@ -19,7 +18,7 @@ from testData.models.db_models import User
 
 
 @pytest.mark.incremental
-@pytest.mark.usefixtures('db_connection', 'http_client', 'delete_user_class')
+@pytest.mark.usefixtures('db_connection', 'http_client', 'delete_user_class', 'db_client')
 class TestSuccessRegistration:
     """
     Тест-кейс на регистрацию. Проверяет: регистрацию и повторную регистрацию.
@@ -45,12 +44,11 @@ class TestSuccessRegistration:
         assert response.json().get('errorMessage') == f"Пользователь с Email: {valid_data.email} уже зарегистрирован",\
             f"Пользователь с Email: {valid_data.email} успешно повторно зарегистрировался"
 
-    def test_find_user_after_registration(self, db_connection: psycopg2.connect):
+    def test_find_user_after_registration(self, db_client: DBClient ):
         """
         Проверка наличия пользователя в БД. После регистрации, пользователь должен быть в БД.
         """
 
-        db_client = DBClient(db_connection)
         users: list[User] = db_client.get_users()
 
         valid_data: RegisterVM = IdentityData.VALID_REGISTRATION_DATA.get('valid_data')
@@ -63,7 +61,7 @@ class TestSuccessRegistration:
                          argvalues=IdentityData.DATA_FOR_BAD_REG,
                          scope="class",
                          ids=[cases.get("case").case_name for cases in IdentityData.DATA_FOR_BAD_REG])
-@pytest.mark.usefixtures('db_connection', 'http_client')
+@pytest.mark.usefixtures('db_connection', 'http_client', 'db_client')
 class TestBadDataRegistration:
     """
     Параметризованный тест с ошибочными данными при регистрации.
@@ -81,14 +79,13 @@ class TestBadDataRegistration:
         assert error_message == date_for_test.expected, f"В ответе от сервера сообщение об ошибке {error_message}, отличается от ожидаемого {date_for_test.expected}"
 
     @pytest.mark.usefixtures('delete_user_func')
-    def test_find_user_after_registration(self, db_connection: psycopg2.connect, test_data: TestContext):
+    def test_find_user_after_registration(self, test_data: TestContext, db_client: DBClient):
         """
         Проверка на отсутствие пользователя в БД.
         """
         date_for_test: ParametrizeModel = test_data.get("case")
         test_input: RegisterVM = date_for_test.input
 
-        db_client = DBClient(db_connection)
         users = db_client.get_users()
 
         assert not DBQueryHandler().user_exist_check(users, test_input.email),\

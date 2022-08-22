@@ -1,7 +1,7 @@
 import pytest
 import psycopg2
 
-from appDriver import HttpClientOWF
+from appDriver import HttpClientOWF, DBClient, DBCleaner, DBSeeder
 from config import BASE_URL_OFL
 from config import DB_CONCTIONS_PARAMS
 from collections import defaultdict
@@ -30,6 +30,30 @@ def http_client():
     Создает экземпляр класса HttpClientOWF - клиент для работы с HTTP запросами
     """
     return HttpClientOWF(BASE_URL_OFL)
+
+
+@pytest.fixture(scope="session")
+def db_client(db_connection):
+    """
+    Создает экземпляр класса DBClient - клиент для работы с DATA BASE
+    """
+    return DBClient(db_connection)
+
+
+@pytest.fixture(scope="session")
+def db_cleaner(db_connection):
+    """
+    Создает экземпляр класса DBCleaner - служит для чистки БД до и после тестов
+    """
+    return DBCleaner(db_connection)
+
+
+@pytest.fixture(scope="session")
+def db_seeder(db_connection):
+    """
+    Создает экземпляр класса DBSeeder - служит для наполнения БД перед тестами
+    """
+    return DBSeeder(db_connection)
 
 
 # Код ниже отвечает за пропуск тестов(шагов) внутри одного класса, если хоть один из них упал.

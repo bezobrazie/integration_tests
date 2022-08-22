@@ -1,8 +1,10 @@
 import pytest
 
-from appDriver import HttpClientOWF
+from appDriver import HttpClientOWF, DBClient
 from testData import TestContext
 from testData.models.view_models import CreateAccountVM, LoginVM
+from testData.models.db_models import Account
+from testData.enums.account_type import AccountType
 from testData.scenarios.create_account_scenario import SUCCESS_SCENARIO, WITHOUT_PERSONAL_DATA_SCENARIO
 
 
@@ -14,7 +16,8 @@ from testData.scenarios.create_account_scenario import SUCCESS_SCENARIO, WITHOUT
 @pytest.mark.usefixtures('seed_users_before_scenario',
                          'seed_addresses_before_scenario',
                          'seed_passports_before_scenario',
-                         'http_client')
+                         'http_client',
+                         'db_client')
 class TestCreateAccount:
     # создаем экземпляр контекста для передачи данных между шагами теста
     context = TestContext()
@@ -33,16 +36,22 @@ class TestCreateAccount:
         token = self.context.get('accessToken')
 
         response = http_client.create_account(token, data_for_create_account)
+
+        response_json = response.json()
+        account_id = response_json['accountId']
+        self.context.add('accountId', account_id)
+
         assert response.status_code == 200, f"Статус ответа равен {response.status_code}, ожидалось 200"
 
-    def test_asserts(self, test_data: TestContext):
+    def test_asserts(self, test_data: TestContext, db_client: DBClient):
         """Проверки"""
-        # добавить проверки на наличие в базе
+        account_id = self.context.get('accountId')
+        account: Account = db_client.get_account_with_id(account_id)
+        assert account.type == AccountType.SAVING
         # совпадение user_id
         # проверка на значение в поле amount == 500,3
-        # проверка на state == 1
+        # проверка на state == 1 сделать Enum
         # проверка на время
-        ...
 
 
 @pytest.mark.incremental

@@ -2,7 +2,8 @@ from uuid import UUID
 from typing import Optional
 from datetime import datetime
 
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel
+from testData.enums.account_type import AccountType
 
 
 # TODO: информация об опциональности полей не актуальна
@@ -74,3 +75,18 @@ class Passport(BaseModel):
     birth_place: str
     issuer: str
     user_id: UUID
+
+
+class Account(BaseModel):
+    """
+    Модель представления данных из таблицы accounts
+    """
+    id: UUID
+    number: int
+    type: AccountType
+    state: int
+    amount: int
+    creation_date: datetime
+    update_date: datetime
+    user_id: UUID
+
