@@ -46,7 +46,7 @@ class TestCreateAccount:
     def test_asserts(self, test_data: TestContext, db_client: DBClient):
         """Проверки"""
         account_id = self.context.get('accountId')
-        account: Account = db_client.get_account_with_id(account_id)
+        account: Account = db_client.get_account_by_id(account_id)
         assert account.type == AccountType.SAVING
         # совпадение user_id
         # проверка на значение в поле amount == 500,3
