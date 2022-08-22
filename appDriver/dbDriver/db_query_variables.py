@@ -12,7 +12,7 @@ class DBQueryVariables:
     SELECT_ALL_USERS_QUERY = SQL("SELECT * FROM users;")
 
     # запрос для выбора счета по его ID
-    SELECT_ACCOUNT_WITH_ID = lambda account_id: f"SELECT * FROM accounts WHERE id = '{account_id}'"
+    SELECT_ACCOUNT_BY_ID = lambda account_id: f"SELECT * FROM accounts WHERE id = '{account_id}'"
 
     # лямбда функция на получение запроса для удаления пользователя по email
     DELETE_USER_BY_EMAIL_QUERY: Callable[[str], str] = lambda email: f"delete from \"AspNetUsers\" where user_name = '{email}'"
