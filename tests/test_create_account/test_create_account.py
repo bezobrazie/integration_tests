@@ -55,7 +55,8 @@ class TestCreateAccount:
 
 
 @pytest.mark.incremental
-@pytest.mark.usefixtures('seed_users_before_scenario', 'http_client')
+@pytest.mark.usefixtures('seed_users_before_scenario',
+                         'http_client')
 class TestCreateAccountWithoutPersonalData:
     """
     Тест на проверку эксепшена в случае регистрации без заполнения персональных данных.

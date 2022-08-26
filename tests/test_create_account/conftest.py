@@ -5,7 +5,7 @@ from appDriver.dbDriver.db_cleaner import DBCleaner
 from testData.scenarios.create_account_scenario import INITIAL_DATA
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='class', autouse=True)
 def clean_data_base_before_scenario(db_cleaner: DBCleaner):
     """
     Фикстура для очистки базы данных до начала тестирования
@@ -15,7 +15,7 @@ def clean_data_base_before_scenario(db_cleaner: DBCleaner):
     db_cleaner.clean_tables(tables)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='class')
 def seed_users_before_scenario(db_cleaner: DBCleaner, db_seeder: DBSeeder):
     """
     Фикстура для заполнения таблиц перед тестами, и чистки после тестов
@@ -28,7 +28,7 @@ def seed_users_before_scenario(db_cleaner: DBCleaner, db_seeder: DBSeeder):
     db_cleaner.clean_tables(tables)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='class')
 def seed_addresses_before_scenario(db_cleaner: DBCleaner, db_seeder: DBSeeder):
     """
     Фикстура для заполнения таблицы адресс перед тестами, и чистки после тестов
@@ -41,7 +41,7 @@ def seed_addresses_before_scenario(db_cleaner: DBCleaner, db_seeder: DBSeeder):
     db_cleaner.clean_tables(tables)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='class')
 def seed_passports_before_scenario(db_cleaner: DBCleaner, db_seeder: DBSeeder):
     """
     Фикстура для заполнения таблицы паспорт перед тестами, и чистки после тестов
