@@ -1,1 +1,1 @@
-from testLogic.db_query_handler import DBQueryHandler
+from testLogic.assertion_object import AssertionObject
