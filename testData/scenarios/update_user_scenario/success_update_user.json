@@ -5,14 +5,14 @@
   },
   "data_for_update_user" : {
     "id": "e42557a0-cfb2-4a1e-a23d-274f4f86ea39",
-    "firstName": "Борис>",
-    "lastName": "Ельцын",
+    "first_name": "Борис>",
+    "last_name": "Ельцын",
     "patronymic": "Тестович",
-    "phoneNumber": "+70348819691",
+    "phone_number": "+70348819691",
     "address": {
-      "postIndex": 248915,
-      "regionCode": 41,
-      "regionName": "Регион Нэйм",
+      "post_index": 248915,
+      "region_code": 41,
+      "region_name": "Регион Нэйм",
       "area": "Ареа",
       "city": "Калуга",
       "locality": "Локалити",
@@ -24,10 +24,10 @@
     "passport": {
       "series": "серия",
       "number": "номер",
-      "departmentCode": "департмент код",
-      "birthDate": "16.12.1994",
-      "issueDate": "11.11.2011",
-      "birthPlace": "Калуга",
+      "department_code": "департмент код",
+      "birth_date": "1994-12-16",
+      "issue_date": "2011-11-11",
+      "birth_place": "Калуга",
       "issuer": "ишюер"
     }
   },

@@ -7,6 +7,11 @@ from testData.enums.account_type import AccountType
 from testData.models.db_models import Address, Passport
 
 
+# def to_camel(string: str) -> str:
+#     word = ''.join(word.capitalize() for word in string.split('_'))
+#     return word[:1].lower() + word[1:]
+
+
 class RegisterVM(BaseModel):
     """ Модель представления данных для регистрации """
     email: str
@@ -37,9 +42,9 @@ class CreateAccountVM(BaseModel):
 
 class UpdateUserVM(BaseModel):
     id: UUID
-    firstName: str
-    lastName: str
+    first_name: str
+    last_name: str
     patronymic: str
-    phoneNumber: str
+    phone_number: str
     address: Address
     passport: Passport

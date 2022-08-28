@@ -1,8 +1,8 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import Optional
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from testData.enums.account_type import AccountType
 
 
@@ -48,7 +48,7 @@ class Address(BaseModel):
     """
     Модель представления данных из таблицы addresses
     """
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     post_index: int
     region_code: int
     region_name: str
@@ -59,14 +59,14 @@ class Address(BaseModel):
     house: str
     housing: str
     apartment: str
-    user_id: UUID
+    user_id: UUID = Field(default_factory=uuid4)
 
 
 class Passport(BaseModel):
     """
     Модель представления данных из таблицы passports
     """
-    id: UUID
+    id: UUID = Field(default_factory=uuid4)
     series: str
     number: str
     department_code:  str
@@ -74,7 +74,7 @@ class Passport(BaseModel):
     issue_date: datetime
     birth_place: str
     issuer: str
-    user_id: UUID
+    user_id: UUID = Field(default_factory=uuid4)
 
 
 class Account(BaseModel):
