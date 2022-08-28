@@ -89,4 +89,3 @@ class Account(BaseModel):
     creation_date: datetime
     update_date: datetime
     user_id: UUID
-

@@ -11,3 +11,6 @@ class EndpointVariables:
 
     # путь для метода используемого для создания нового счета
     CREATE_ACCOUNT_ROUTE = "api/accounts/create"
+
+    #путь для метода используемого для обновления пользователя
+    UPDATE_USER = 'api/user/requisites/update'

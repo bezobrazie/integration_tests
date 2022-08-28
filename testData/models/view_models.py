@@ -1,8 +1,10 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 
 from testData.enums.account_type import AccountType
+from testData.models.db_models import Address, Passport
 
 
 class RegisterVM(BaseModel):
@@ -32,3 +34,12 @@ class CreateAccountVM(BaseModel):
     class Config:
         use_enum_values = True
 
+
+class UpdateUserVM(BaseModel):
+    id: UUID
+    firstName: str
+    lastName: str
+    patronymic: str
+    phoneNumber: str
+    address: Address
+    passport: Passport
