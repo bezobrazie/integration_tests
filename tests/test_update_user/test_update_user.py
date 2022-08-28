@@ -21,11 +21,7 @@ class TestUpdateUser:
 
     def test_update_user(self, http_client: HttpClientOWF):
         """
-        На данный момент не работает преобразование в UpdateUserVM, проблема именно с АДресом и Паспортом
-        я так подозреваю, что он не может преобразовать данные в модельку внутри другой модельки.
-        Нужно либо их франкинштейнить, чего я делать не хочу или искать решение потипу енамок, указать
-        class Config:
-              use_enum_values = True
+        Не работает конвертация даты из json в datatime объект
         """
         data_for_update_user: UpdateUserVM = UpdateUserVM.parse_obj(SUCCESS_UPDATE_SCENARIO.get('data_for_update_user'))
         token = self.context.get('accessToken')
