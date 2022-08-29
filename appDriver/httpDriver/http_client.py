@@ -1,7 +1,7 @@
 import requests
 from urllib.parse import urljoin
 
-from testData.models.view_models import RegisterVM, LoginVM, CreateAccountVM
+from testData.models.view_models import RegisterVM, LoginVM, CreateAccountVM, UpdateUserVM
 from appDriver.httpDriver.endpoint_variables import EndpointVariables
 
 
@@ -39,4 +39,13 @@ class HttpClientOWF:
         """
         return requests.post(url=urljoin(self.base_url, EndpointVariables.CREATE_ACCOUNT_ROUTE),
                              json=create_account_vm.dict(),
+                             headers={"Authorization": f"Bearer {token}"})
+
+    def update_user_requisites(self, token: str, update_user_vm: UpdateUserVM) -> requests.Response:
+        """
+        Метод для создания нового счета
+        :param: :
+        """
+        return requests.post(url=urljoin(self.base_url, EndpointVariables.UPDATE_USER),
+                             json=update_user_vm.json(),
                              headers={"Authorization": f"Bearer {token}"})

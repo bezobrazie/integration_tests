@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Any, List, Tuple
+from uuid import UUID
 
 from testData.models.db_models import User, IdentityUser, Address, Passport
 from appDriver.dbDriver.db_query_variables import DBQueryVariables
@@ -76,6 +77,10 @@ class DBSeeder:
             attr = getattr(model, field)
             if isinstance(attr, datetime):
                 temp += (attr.isoformat(),)
+            elif isinstance(attr, date):
+                temp += (attr.isoformat(),)
+            elif isinstance(attr, UUID):
+                temp += (str(attr),)
             else:
                 temp += (attr,)
 

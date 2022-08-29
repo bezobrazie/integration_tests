@@ -1,0 +1,35 @@
+{
+  "data_for_login" : {
+    "email": "post@mail.ru",
+    "password": "Test123456"
+  },
+  "data_for_update_user" : {
+    "id": "e42557a0-cfb2-4a1e-a23d-274f4f86ea39",
+    "first_name": "Борис>",
+    "last_name": "Ельцын",
+    "patronymic": "Тестович",
+    "phone_number": "+70348819691",
+    "address": {
+      "post_index": 248915,
+      "region_code": 41,
+      "region_name": "Регион Нэйм",
+      "area": "Ареа",
+      "city": "Калуга",
+      "locality": "Локалити",
+      "street": "Улица",
+      "house": "Дом",
+      "housing": "Хаусинг",
+      "apartment": "Квартира"
+    },
+    "passport": {
+      "series": "серия",
+      "number": "номер",
+      "department_code": "департмент код",
+      "birth_date": "1994-12-16",
+      "issue_date": "2011-11-11",
+      "birth_place": "Калуга",
+      "issuer": "ишюер"
+    }
+  },
+  "case_name": "success update user"
+}
