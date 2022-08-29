@@ -1,7 +1,6 @@
 from typing import Optional
-from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4
 
 from testData.enums.account_type import AccountType
 from testData.models.db_models import Address, Passport
@@ -41,7 +40,7 @@ class CreateAccountVM(BaseModel):
 
 
 class UpdateUserVM(BaseModel):
-    id: UUID
+    id: UUID4
     first_name: str
     last_name: str
     patronymic: str

@@ -47,5 +47,5 @@ class HttpClientOWF:
         :param: :
         """
         return requests.post(url=urljoin(self.base_url, EndpointVariables.UPDATE_USER),
-                             json=update_user_vm.dict(),
+                             json=update_user_vm.json(),
                              headers={"Authorization": f"Bearer {token}"})

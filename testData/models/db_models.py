@@ -1,8 +1,8 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 from typing import Optional
-from datetime import datetime
+from datetime import date
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, UUID4
 from testData.enums.account_type import AccountType
 
 
@@ -19,8 +19,8 @@ class User(BaseModel):
     email: str
     phone_number: str
     photo_file_id: Optional[UUID]
-    creation_date: datetime
-    update_date: datetime
+    creation_date: date
+    update_date: date
 
 
 class IdentityUser(BaseModel):
@@ -39,7 +39,7 @@ class IdentityUser(BaseModel):
     phone_number: Optional[str]
     phone_number_confirmed: bool
     two_factor_enabled: bool
-    lockout_end: Optional[datetime]
+    lockout_end: Optional[date]
     lockout_enabled: bool
     access_failed_count: int
 
@@ -48,7 +48,7 @@ class Address(BaseModel):
     """
     Модель представления данных из таблицы addresses
     """
-    id: UUID = Field(default_factory=uuid4)
+    id: UUID4 | None
     post_index: int
     region_code: int
     region_name: str
@@ -59,22 +59,22 @@ class Address(BaseModel):
     house: str
     housing: str
     apartment: str
-    user_id: UUID = Field(default_factory=uuid4)
+    user_id: UUID4 | None
 
 
 class Passport(BaseModel):
     """
     Модель представления данных из таблицы passports
     """
-    id: UUID = Field(default_factory=uuid4)
+    id: UUID4 | None
     series: str
     number: str
     department_code:  str
-    birth_date: datetime
-    issue_date: datetime
+    birth_date: date
+    issue_date: date
     birth_place: str
     issuer: str
-    user_id: UUID = Field(default_factory=uuid4)
+    user_id: UUID4 | None
 
 
 class Account(BaseModel):
@@ -86,6 +86,6 @@ class Account(BaseModel):
     type: AccountType
     state: int
     amount: int
-    creation_date: datetime
-    update_date: datetime
+    creation_date: date
+    update_date: date
     user_id: UUID
