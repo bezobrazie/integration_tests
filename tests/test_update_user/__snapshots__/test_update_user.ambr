@@ -1,0 +1,36 @@
+# name: TestUpdateUser.test_get_user_requisites
+  dict({
+    'accounts': list([
+    ]),
+    'address': dict({
+      'apartment': 'Квартира',
+      'area': 'Ареа',
+      'city': 'Калуга',
+      'house': 'Дом',
+      'housing': 'Хаусинг',
+      'locality': 'Локалити',
+      'postIndex': 248915,
+      'regionCode': 41,
+      'regionName': 'Регион Нэйм',
+      'street': 'Улица',
+    }),
+    'email': 'post@mail.ru',
+    'firstName': 'Борис',
+    'id': 'e42557a0-cfb2-4a1e-a23d-274f4f86ea39',
+    'lastName': 'Ельцын',
+    'passport': dict({
+      'birthDate': '1994-12-16',
+      'birthPlace': 'Калуга',
+      'departmentCode': '666-777',
+      'issueDate': '2011-11-11',
+      'issuer': 'ишюер',
+      'number': '123321',
+      'series': '4444',
+    }),
+    'patronymic': 'Тестович',
+    'phoneNumber': '+70348819691',
+    'registrationDate': '2022-02-08T00:00:00Z',
+    'vendors': list([
+    ]),
+  })
+# ---

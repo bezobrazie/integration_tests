@@ -44,8 +44,15 @@ class HttpClientOWF:
     def update_user_requisites(self, token: str, update_user_vm: UpdateUserVM) -> requests.Response:
         """
         Метод для создания нового счета
-        :param: :
         """
         return requests.post(url=urljoin(self.base_url, EndpointVariables.UPDATE_USER),
-                             json=update_user_vm.json(),
-                             headers={"Authorization": f"Bearer {token}"})
+                             data=update_user_vm.json(by_alias=True),
+                             headers={"Authorization": f"Bearer {token}",
+                                      "Content-Type": "application/json"})
+
+    def get_user_requisites(self, token: str) -> requests.Response:
+        """
+        Метод для получения реквизитов пользователя по токену
+        """
+        return requests.get(url=urljoin(self.base_url, EndpointVariables.GET_REQUISITES),
+                            headers={"Authorization": f"Bearer {token}"})

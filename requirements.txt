@@ -23,3 +23,6 @@ tomli==2.0.1
 typing_extensions==4.3.0
 urllib3==1.26.10
 PyJWT==2.4.0
+pyhumps==3.7.3
+syrupy==3.0.0
+
