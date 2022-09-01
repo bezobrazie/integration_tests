@@ -4,6 +4,7 @@ from datetime import date
 
 from pydantic import BaseModel, UUID4
 from testData.enums.account_type import AccountType
+from testData.models.config import CamelBaseModel
 
 
 # TODO: информация об опциональности полей не актуальна
@@ -44,7 +45,7 @@ class IdentityUser(BaseModel):
     access_failed_count: int
 
 
-class Address(BaseModel):
+class Address(CamelBaseModel):
     """
     Модель представления данных из таблицы addresses
     """
@@ -62,7 +63,7 @@ class Address(BaseModel):
     user_id: UUID4 | None
 
 
-class Passport(BaseModel):
+class Passport(CamelBaseModel):
     """
     Модель представления данных из таблицы passports
     """
