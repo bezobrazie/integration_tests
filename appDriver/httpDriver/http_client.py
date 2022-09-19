@@ -60,6 +60,10 @@ class HttpClientOWF:
                             headers={"Authorization": f"Bearer {token}"})
 
     def loads_avatar(self, token: str, fp: BytesIO) -> requests.Response:
-        return requests.post(url=urljoin(self.base_url, EndpointVariables.LOAD_AVATAR_ROUTE),
+        return requests.post(url=urljoin(self.base_url, EndpointVariables.AVATAR_ROUTE),
                              headers={"Authorization": f"Bearer {token}"},
                              files={'file': fp})
+
+    def get_avatar(self, token: str) -> requests.Response:
+        return requests.get(url=urljoin(self.base_url, EndpointVariables.AVATAR_ROUTE),
+                            headers={"Authorization": f"Bearer {token}"})

@@ -1,10 +1,23 @@
 from datetime import datetime, timedelta
 
 from testData.models.db_models import User
+from testData.enums.imageFormats import ImageFormat
 import jwt
 
 
 class AssertionObject:
+
+    IMAGE_BYTES_HEADERS = {
+        ImageFormat.JPEG: b'\xff\xd8\xff\xe0',
+        ImageFormat.PNG: b'\x89PNG\r\n\x1a'
+    }
+
+    @classmethod
+    def check_image_format(cls, image_content: bytes, image_format: ImageFormat) -> bool:
+        """
+        Принимает массив байтов и сравнивает начало масива с заготовлеными форматами
+        """
+        return image_content.startswith(cls.IMAGE_BYTES_HEADERS[image_format])
 
     @staticmethod
     def user_exist_check(users: list[User], email: str) -> bool:

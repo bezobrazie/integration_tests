@@ -19,4 +19,4 @@ class EndpointVariables:
     GET_REQUISITES = 'api/user/requisites'
 
     # путь для метода на загрузку аватара
-    LOAD_AVATAR_ROUTE = "api/user/avatar"
+    AVATAR_ROUTE = "api/user/avatar"

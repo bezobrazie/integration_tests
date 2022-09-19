@@ -8,15 +8,15 @@ from testData.models.db_models import User, IdentityUser, Address, Passport
 
 
 # Путь до папки с тестовыми данными
-TEST_DATA_PATH = os.path.join(TEST_DATA_DIR, "scenarios", "create_account_scenario")
+TEST_DATA_PATH = TEST_DATA_DIR / "scenarios" / "create_account_scenario"
 
 SUCCESS_SCENARIO = [
-    TestContext.from_json_file(os.path.join(TEST_DATA_PATH, "scenario_1.json")),
-    TestContext.from_json_file(os.path.join(TEST_DATA_PATH, "scenario_2.json")),
-    TestContext.from_json_file(os.path.join(TEST_DATA_PATH, "scenario_3.json"))
+    TestContext.from_json_file(TEST_DATA_PATH / "scenario_1.json"),
+    TestContext.from_json_file(TEST_DATA_PATH / "scenario_2.json"),
+    TestContext.from_json_file(TEST_DATA_PATH / "scenario_3.json")
 ]
 
-WITHOUT_PERSONAL_DATA_SCENARIO = TestContext.from_json_file(os.path.join(TEST_DATA_PATH, "scenario_1.json"))
+WITHOUT_PERSONAL_DATA_SCENARIO = TestContext.from_json_file(TEST_DATA_PATH / "scenario_1.json")
 
 # Данные используются в DBSeeder для подготовки базы к тестам.
 INITIAL_DATA = {

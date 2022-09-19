@@ -7,10 +7,9 @@ from testData import TestContext
 from testData.models.db_models import User, IdentityUser, Address, Passport
 
 # Путь до папки с тестовыми данными
-TEST_DATA_PATH = os.path.join(TEST_DATA_DIR, "scenarios", "update_user_scenario")
+TEST_DATA_PATH = TEST_DATA_DIR / "scenarios" / "update_user_scenario"
 
-SUCCESS_UPDATE_SCENARIO = TestContext.from_json_file(os.path.join(TEST_DATA_PATH, "success_update_user.json"))
-
+SUCCESS_UPDATE_SCENARIO = TestContext.from_json_file(TEST_DATA_PATH / "success_update_user.json")
 
 # Данные используются в DBSeeder для подготовки базы к тестам.
 INITIAL_DATA = {
