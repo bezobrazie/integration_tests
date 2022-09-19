@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import requests
 from urllib.parse import urljoin
 
@@ -55,4 +57,13 @@ class HttpClientOWF:
         Метод для получения реквизитов пользователя по токену
         """
         return requests.get(url=urljoin(self.base_url, EndpointVariables.GET_REQUISITES),
+                            headers={"Authorization": f"Bearer {token}"})
+
+    def loads_avatar(self, token: str, fp: BytesIO) -> requests.Response:
+        return requests.post(url=urljoin(self.base_url, EndpointVariables.AVATAR_ROUTE),
+                             headers={"Authorization": f"Bearer {token}"},
+                             files={'file': fp})
+
+    def get_avatar(self, token: str) -> requests.Response:
+        return requests.get(url=urljoin(self.base_url, EndpointVariables.AVATAR_ROUTE),
                             headers={"Authorization": f"Bearer {token}"})

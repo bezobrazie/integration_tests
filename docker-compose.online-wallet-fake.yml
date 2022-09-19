@@ -6,10 +6,16 @@ services:
     image: gwinkamp/online-wallet-fake:latest
     environment:
       - DbConnectionString=Server=postgres;Port=5432;Database=online-wallet-fake;User Id=postgres;Password=postgres;
+      - StorageApiUrl=http://storage-mock:1151
     ports:
       - 8000:80
     depends_on:
       - postgres
+
+  storage-mock:
+    image: storage-mock
+    ports:
+      - 1151:1151
 
   postgres:
     image: postgres:latest

@@ -17,3 +17,6 @@ class EndpointVariables:
 
     # путь для метода на получение реквизитов
     GET_REQUISITES = 'api/user/requisites'
+
+    # путь для метода на загрузку аватара
+    AVATAR_ROUTE = "api/user/avatar"

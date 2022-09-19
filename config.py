@@ -1,10 +1,10 @@
-import os
-
+from pathlib import Path
 
 # Путь до папки с проектом
-BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = Path(__file__).resolve().parent
 
-TEST_DATA_DIR = os.path.join(BASE_PATH, "testData")
+# Путь до папки с тестовыми данными
+TEST_DATA_DIR = BASE_DIR / "testData"
 
 #Базовый урл тестируемого приложения
 BASE_URL_OFL = 'http://localhost:8000/'
